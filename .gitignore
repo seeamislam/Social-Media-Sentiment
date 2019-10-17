@@ -1,1 +1,5 @@
+# Hide API Keys
 config.py
+
+# Ignore all .txt files
+*.txt

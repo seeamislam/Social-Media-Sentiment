@@ -1,6 +1,9 @@
 import twitter  # import the Twitter library
 import config  # import contents of .config
 
+
+file = open("tweets.txt","w+")
+
 # initialize api instance (build a Twitter.api object)
 twitter_api = twitter.Api(consumer_key=config.ACCESS_TOKEN,
                           consumer_secret=config.ACCESS_SECRET,
@@ -14,7 +17,7 @@ def collectTweets(keyword):  # function to collect tweets with a specified keywo
 
         print("Fetched " + str(len(tweets_fetched)) + " tweets for the term " + keyword)
 
-        return [{"text": status.text, "created_at": status.created_at, "URL": status.urls, "label": None} for status in tweets_fetched]
+        return [{"Tweet": status.text, "Create Date": status.created_at, "URL": status.urls, "label": None} for status in tweets_fetched]
         # print the text and label (placeholder for polarity) for each tweet recovered
 
     except:  # if an error persists, run this
@@ -23,6 +26,11 @@ def collectTweets(keyword):  # function to collect tweets with a specified keywo
 
 
 search_term = input("Enter a search keyword:")
-testDataSet = collectTweets(search_term)
+testDataSet = collectTweets(search_term)  # saves the tweets as a dictionary
 
-print(testDataSet[0:5])
+with open('tweets.txt', 'w+') as f:
+    for key in testDataSet:
+        print(key, file=f)
+        print('\n', '\n')
+
+file.close()
