@@ -38,23 +38,22 @@ file.close()
 
 # To train our data set, we will use Niek Sander's Corpus of already classified tweets
 # FUN FACT: Corpus means large and structured set of text.
-# However, Twitter does not let us save tweets on a device, so we first have to fetch them.
-# Corpus thus instead contains the topic, label (pos/neg) and ID of each tweet, so we can fetch it and store it.
+# Twitter does not let us save tweets on a device, so we first have to fetch them.
+# Corpus contains the topic, label (pos/neg) and ID of each tweet, so we can fetch it and store it.
 
 
-def buildTrainingSet(corpusFile, tweetDataFile):  # corpusFile will contain the attributes of each tweet we need (corpus)
+def buildTrainingSet(corpusFile, tweetDataFile):  # corpusFile will contain the attributes of each tweet we need
     import csv
     import time
 
     rawTweets = []  # Empty list which will hold tweet id, labels, and topics.
 
-    with open(corpusFile, 'rb') as csvfile:  # open corpusFile
+    with open(corpusFile, 'r') as csvfile:  # open corpusFile
         lineReader = csv.reader(csvfile, delimiter=',', quotechar="\"")
         for row in lineReader:
             rawTweets.append({"tweet_id": row[2], "label": row[1], "topic": row[0]})
             #  Using this, we append every tweet in the file to our list
 
-    rate_limit = 180
     sleep_time = 900 / 180
     # 900 seconds = 15 mins, which is the time window between requesting another set of tweets
     # Our goal is to download 5000 hand-classified tweets, so building our data set will take some time.
