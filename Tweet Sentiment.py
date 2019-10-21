@@ -36,32 +36,55 @@ with open('tweets.txt', 'w+') as f:
 
 file.close()
 
+# To train our data set, we will use Niek Sander's Corpus of already classified tweets
+# FUN FACT: Corpus means large and structured set of text.
+# However, Twitter does not let us save tweets on a device, so we first have to fetch them.
+# Corpus thus instead contains the topic, label (pos/neg) and ID of each tweet, so we can fetch it and store it.
 
-def buildTrainingSet(corpusFile, tweetDataFile):  # corpusFile will contain the downloaded training set
+
+def buildTrainingSet(corpusFile, tweetDataFile):  # corpusFile will contain the attributes of each tweet we need (corpus)
     import csv
     import time
 
-    rawTweets = []  # Empty list which we will append the tweets from corpusFile to
+    rawTweets = []  # Empty list which will hold tweet id, labels, and topics.
 
     with open(corpusFile, 'rb') as csvfile:  # open corpusFile
         lineReader = csv.reader(csvfile, delimiter=',', quotechar="\"")
         for row in lineReader:
             rawTweets.append({"tweet_id": row[2], "label": row[1], "topic": row[0]})
-            #  Using this, we append every tweet in the file to our list of tweets
+            #  Using this, we append every tweet in the file to our list
 
     rate_limit = 180
     sleep_time = 900 / 180
+    # 900 seconds = 15 mins, which is the time window between requesting another set of tweets
+    # Our goal is to download 5000 hand-classified tweets, so building our data set will take some time.
 
     trainingDataSet = []  # empty list to store tweets
 
     for tweet in rawTweets:  # Now, we will loop through each tweet in our list of raw tweets
         try:
             status = twitter_api.GetStatus(tweet["tweet_id"])
-            # Call the API on every tweet in the list and get its status (status contains the raw text of the tweet)
+            # Call the API on every tweetID in the list and get its status (status contains the raw text of the tweet)
             print("Tweet fetched" + status.text)
             tweet["text"] = status.text
             trainingDataSet.append(tweet)  # append the raw text of the tweet to our new csv training set
             time.sleep(sleep_time)  # we have to wait 5 minutes as per restrictions by the API
         except:
             continue
+
+    # now we write them to the empty CSV file
+    with open(tweetDataFile, 'wb') as csvfile:
+        linewriter = csv.writer(csvfile, delimiter=',', quotechar="\"")
+        for tweet in trainingDataSet:
+            try:
+                linewriter.writerow([tweet["tweet_id"], tweet["text"], tweet["label"], tweet["topic"]])
+            except Exception as e:
+                print(e)
+    return trainingDataSet
+
+
+corpusFile = "/Users/orange/py-ground/Twitter-Sentiment/corpus.csv"
+tweetDataFile = "/Users/orange/py-ground/Twitter-Sentiment/tweetDataFile.csv"
+
+trainingData = buildTrainingSet(corpusFile, tweetDataFile)
 
