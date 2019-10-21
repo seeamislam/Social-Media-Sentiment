@@ -36,3 +36,32 @@ with open('tweets.txt', 'w+') as f:
 
 file.close()
 
+
+def buildTrainingSet(corpusFile, tweetDataFile):  # corpusFile will contain the downloaded training set
+    import csv
+    import time
+
+    rawTweets = []  # Empty list which we will append the tweets from corpusFile to
+
+    with open(corpusFile, 'rb') as csvfile:  # open corpusFile
+        lineReader = csv.reader(csvfile, delimiter=',', quotechar="\"")
+        for row in lineReader:
+            rawTweets.append({"tweet_id": row[2], "label": row[1], "topic": row[0]})
+            #  Using this, we append every tweet in the file to our list of tweets
+
+    rate_limit = 180
+    sleep_time = 900 / 180
+
+    trainingDataSet = []  # empty list to store tweets
+
+    for tweet in rawTweets:  # Now, we will loop through each tweet in our list of raw tweets
+        try:
+            status = twitter_api.GetStatus(tweet["tweet_id"])
+            # Call the API on every tweet in the list and get its status (status contains the raw text of the tweet)
+            print("Tweet fetched" + status.text)
+            tweet["text"] = status.text
+            trainingDataSet.append(tweet)  # append the raw text of the tweet to our new csv training set
+            time.sleep(sleep_time)  # we have to wait 5 minutes as per restrictions by the API
+        except:
+            continue
+
