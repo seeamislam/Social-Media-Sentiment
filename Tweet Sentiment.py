@@ -54,7 +54,8 @@ def buildTrainingSet(corpusFile, tweetDataFile):  # corpusFile will contain the 
             rawTweets.append({"tweet_id": row[2], "label": row[1], "topic": row[0]})
             #  Using this, we append every tweet in the file to our list
 
-    sleep_time = 900 / 180
+    rate_limit = 180
+    sleep_time = 900 / rate_limit
     # 900 seconds = 15 mins, which is the time window between requesting another set of tweets
     # Our goal is to download 5000 hand-classified tweets, so building our data set will take some time.
 
@@ -67,12 +68,12 @@ def buildTrainingSet(corpusFile, tweetDataFile):  # corpusFile will contain the 
             print("Tweet fetched" + status.text)
             tweet["text"] = status.text
             trainingDataSet.append(tweet)  # append the raw text of the tweet to our new csv training set
-            time.sleep(sleep_time)  # we have to wait 5 minutes as per restrictions by the API
+            time.sleep(sleep_time)  # we have to wait 15 minutes as per restrictions by the API
         except:
             continue
 
     # now we write them to the empty CSV file
-    with open(tweetDataFile, 'wb') as csvfile:
+    with open(tweetDataFile, 'w') as csvfile:
         linewriter = csv.writer(csvfile, delimiter=',', quotechar="\"")
         for tweet in trainingDataSet:
             try:
