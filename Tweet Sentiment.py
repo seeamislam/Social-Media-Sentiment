@@ -36,6 +36,7 @@ with open('tweets.txt', 'w+') as f:
 
 file.close()
 
+
 # To train our data set, we will use Niek Sander's Corpus of already classified tweets
 # FUN FACT: Corpus means large and structured set of text.
 # Twitter does not let us save tweets on a device, so we first have to fetch them.
@@ -56,7 +57,7 @@ def buildTrainingSet(corpusFile, tweetDataFile):  # corpusFile will contain the 
 
     rate_limit = 180
     sleep_time = 900 / rate_limit
-    # 900 seconds = 15 mins, which is the time window between requesting another set of tweets
+    # 900 seconds = 15 mins, which is the time window between requesting another set of 180 tweets
     # Our goal is to download 5000 hand-classified tweets, so building our data set will take some time.
 
     trainingDataSet = []  # empty list to store tweets
@@ -78,7 +79,7 @@ def buildTrainingSet(corpusFile, tweetDataFile):  # corpusFile will contain the 
         for tweet in trainingDataSet:
             try:
                 linewriter.writerow([tweet["tweet_id"], tweet["text"], tweet["label"], tweet["topic"]])
-            except Exception as e:
+            except Exception as e:  # This allows us to still access attributes of the object
                 print(e)
     return trainingDataSet
 
@@ -87,4 +88,3 @@ corpusFile = "/Users/orange/py-ground/Twitter-Sentiment/corpus.csv"
 tweetDataFile = "/Users/orange/py-ground/Twitter-Sentiment/tweetDataFile.csv"
 
 trainingData = buildTrainingSet(corpusFile, tweetDataFile)
-
