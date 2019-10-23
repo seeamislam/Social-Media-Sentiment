@@ -102,3 +102,12 @@ class PreProcessTweets:
         #  Stop words are useless words that should be removed during preprocessing - such as the, a, an
         #  Fortunately, we can use a function in NLTK to remove them
 
+    def tokenizeTweets(self, tweet):
+        #  Process the tweets to lower case, remove URLS, usernames, hashtags, and remove repeated characters
+        #  We will use the re (regular expression) library to manipulate our strings
+        tweet = tweet.lower()  # to lower-case
+        tweet = re.sub('((https?://[^\s]+)|(www\.[^\s]+))', 'URL', tweet)  # remove URLs
+        tweet = re.sub('@[^\s]+', 'AT_USER', tweet)  # remove usernames
+        tweet = re.sub(r'#([^\s]+)', r'\1', tweet)  # remove the # in #hashtag
+        tweet = word_tokenize(tweet)  # remove repeated characters
+        return [word for word in tweet if word not in self._stopwords]
