@@ -1,3 +1,6 @@
+import csv
+import json
+
 import twitter  # import the Twitter library
 import config  # import contents of .config
 import re  # Regular expression library - Helps us parse strings and modify them in efficient ways
@@ -93,6 +96,7 @@ tweetDataFile = "/Users/orange/py-ground/Twitter-Sentiment/tweetDataFile.csv"
 
 # trainingData = buildTrainingSet(corpusFile, tweetDataFile)  # Used to build the training data
 trainingData = "/Users/orange/py-ground/Twitter-Sentiment/tweetDataFile.csv"
+trainingDataToken = "/Users/orange/py-ground/Twitter-Sentiment/tweetDataFileToken.csv"
 
 
 class PreProcessTweets:
@@ -114,12 +118,20 @@ class PreProcessTweets:
 
     def processTweets(self, list_of_tweets):
         processedTweets = []  # empty list to hold all the processed tweets
-        for tweet in list_of_tweets:
-            processedTweets.append((self.tokenizeTweets(tweet["text"]), tweet["label"]))
-            # Append both the tweet's text and its label to the list
+        file = open(trainingDataToken, mode='w')
+        with open(list_of_tweets, mode='r') as csv_file:
+            lineReader = csv.DictReader(csv_file, delimiter=',', quotechar="\"")
+            for tweet in lineReader:
+                processedTweets.append((self.tokenizeTweets(tweet["text"]), tweet["label"]))
+                file.write("\""+str(self.tokenizeTweets(tweet["text"]))+"\",")
+                file.write(str(self.tokenizeTweets(tweet["label"]))+'\n')
+                # Append both the tweet's text and its label to the list
+        csv_file.close()
+        file.close()
         return processedTweets
 
 
 tweetProcessor = PreProcessTweets()
 preprocessedTrainingSet = tweetProcessor.processTweets(trainingData)  # Process the training data
-preprocessedTestSet = tweetProcessor.processTweets(testDataSet)
+print(json.dumps(preprocessedTrainingSet))
+# preprocessedTestSet = tweetProcessor.processTweets(testDataSet)
