@@ -1,5 +1,9 @@
 import twitter  # import the Twitter library
 import config  # import contents of .config
+import re  # Regular expression library - Helps us parse strings and modify them in efficient ways
+from nltk.tokenize import word_tokenize  # NLP toolkit library
+from string import punctuation
+from nltk.corpus import stopwords
 
 file = open("tweets.txt", "w+")
 
@@ -87,4 +91,14 @@ def buildTrainingSet(corpusFile, tweetDataFile):  # corpusFile will contain the 
 corpusFile = "/Users/orange/py-ground/Twitter-Sentiment/corpus.csv"
 tweetDataFile = "/Users/orange/py-ground/Twitter-Sentiment/tweetDataFile.csv"
 
-trainingData = buildTrainingSet(corpusFile, tweetDataFile)
+# trainingData = buildTrainingSet(corpusFile, tweetDataFile)  # Used to build the training data
+trainingData = "/Users/orange/py-ground/Twitter-Sentiment/tweetDataFile.csv"
+
+
+class PreProcessTweets:
+    def __init__(self):
+        self._stopwords = set(stopwords.words('english') + list(punctuation) + ['AT_USER', 'URL'])
+        #  The constructor of this class removes STOP words
+        #  Stop words are useless words that should be removed during preprocessing - such as the, a, an
+        #  Fortunately, we can use a function in NLTK to remove them
+

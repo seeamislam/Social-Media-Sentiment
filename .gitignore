@@ -3,3 +3,5 @@ config.py
 
 # Ignore all .txt files
 *.txt
+
+*.csv
