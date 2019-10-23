@@ -111,3 +111,15 @@ class PreProcessTweets:
         tweet = re.sub(r'#([^\s]+)', r'\1', tweet)  # remove the # in #hashtag
         tweet = word_tokenize(tweet)  # remove repeated characters
         return [word for word in tweet if word not in self._stopwords]
+
+    def processTweets(self, list_of_tweets):
+        processedTweets = []  # empty list to hold all the processed tweets
+        for tweet in list_of_tweets:
+            processedTweets.append((self.tokenizeTweets(tweet["text"]), tweet["label"]))
+            # Append both the tweet's text and its label to the list
+        return processedTweets
+
+
+tweetProcessor = PreProcessTweets()
+preprocessedTrainingSet = tweetProcessor.processTweets(trainingData)  # Process the training data
+preprocessedTestSet = tweetProcessor.processTweets(testDataSet)
