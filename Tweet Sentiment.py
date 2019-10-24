@@ -1,6 +1,6 @@
 import csv
 import json
-
+import nltk
 import twitter  # import the Twitter library
 import config  # import contents of .config
 import re  # Regular expression library - Helps us parse strings and modify them in efficient ways
@@ -133,5 +133,17 @@ class PreProcessTweets:
 
 tweetProcessor = PreProcessTweets()
 preprocessedTrainingSet = tweetProcessor.processTweets(trainingData)  # Process the training data
-print(json.dumps(preprocessedTrainingSet))
+# print(json.dumps(preprocessedTrainingSet))
 # preprocessedTestSet = tweetProcessor.processTweets(testDataSet)
+
+
+def buildVocabulary(preprocessedTrainingData):  # Make a list of all words in our training set
+    all_words = []  # A list to hold all words in our training set (including repetitions)
+
+    for (words, sentiment) in preprocessedTrainingData:
+        all_words.extend(words)
+
+    wordlist = nltk.FreqDist(all_words)  # Use the build in function within nltk to find the frequency of each word
+    word_features = wordlist.keys()  # word_features is a list of distinct words, where the key is its frequency
+
+    return word_features
