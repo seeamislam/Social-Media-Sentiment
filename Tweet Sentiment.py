@@ -148,7 +148,7 @@ def buildVocabulary(preprocessedTrainingData):  # Make a list of all words in ou
     return word_features
 
 
-def extract_features(tweet):
+def extract_features(tweet): # Determine whether or not each tweet contains feature words
     tweet_words = set(tweet)
     features = {}
     for word in word_features:
@@ -161,4 +161,21 @@ def extract_features(tweet):
 word_features = buildVocabulary(preprocessedTrainingSet)
 trainingFeatures = nltk.classify.apply_features(extract_features, preprocessedTrainingSet)
 # apply_features does the feature extraction from the lists
+# trainingFeatures is the final feature vector
+
+# Now, we can train a model using the Naive-Bayes Classifier
+
+NaiveBayesClassifier = nltk.NaiveBayesClassifier.train(trainingFeatures)
+# NaiveBayesClassifier is a built-in nltk function which trains the model using our feature vector.
+
+
+for key in preprocessedTrainingSet:
+    resultLabels = [NaiveBayesClassifier.classify(extract_features(tweet[key])) for tweet in preprocessedTrainingSet]
+
+    if resultLabels.count('positive') > resultLabels.count('negative'):
+        print("Overall Positive Sentiment")
+    # print("Positive Sentiment Percentage = " + str(100*resultLabels.count('positive')/len(resultLabels)) + "%")
+    else:
+        print("Overall Negative Sentiment")
+    # print("Negative Sentiment Percentage = " + str(100*resultLabels.count('negative')/len(resultLabels)) + "%")
 
