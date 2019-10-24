@@ -1,10 +1,10 @@
 import csv
 import json
-import nltk
+import nltk  # NLP toolkit library
 import twitter  # import the Twitter library
 import config  # import contents of .config
 import re  # Regular expression library - Helps us parse strings and modify them in efficient ways
-from nltk.tokenize import word_tokenize  # NLP toolkit library
+from nltk.tokenize import word_tokenize
 from string import punctuation
 from nltk.corpus import stopwords
 
@@ -123,8 +123,8 @@ class PreProcessTweets:
             lineReader = csv.DictReader(csv_file, delimiter=',', quotechar="\"")
             for tweet in lineReader:
                 processedTweets.append((self.tokenizeTweets(tweet["text"]), tweet["label"]))
-                file.write("\""+str(self.tokenizeTweets(tweet["text"]))+"\",")
-                file.write(str(self.tokenizeTweets(tweet["label"]))+'\n')
+                file.write("\"" + str(self.tokenizeTweets(tweet["text"])) + "\",")
+                file.write(str(self.tokenizeTweets(tweet["label"])) + '\n')
                 # Append both the tweet's text and its label to the list
         csv_file.close()
         file.close()
@@ -133,17 +133,32 @@ class PreProcessTweets:
 
 tweetProcessor = PreProcessTweets()
 preprocessedTrainingSet = tweetProcessor.processTweets(trainingData)  # Process the training data
+
+
 # print(json.dumps(preprocessedTrainingSet))
 # preprocessedTestSet = tweetProcessor.processTweets(testDataSet)
 
 
 def buildVocabulary(preprocessedTrainingData):  # Make a list of all words in our training set
     all_words = []  # A list to hold all words in our training set (including repetitions)
-
     for (words, sentiment) in preprocessedTrainingData:
         all_words.extend(words)
-
     wordlist = nltk.FreqDist(all_words)  # Use the build in function within nltk to find the frequency of each word
     word_features = wordlist.keys()  # word_features is a list of distinct words, where the key is its frequency
-
     return word_features
+
+
+def extract_features(tweet):
+    tweet_words = set(tweet)
+    features = {}
+    for word in word_features:
+        features['contains(%s)' % word] = (word in tweet_words)
+        # Every unique word will have a key which says whether that word is inside the tweet (true) or not (false)
+    return features
+
+
+# Build the final feature vector
+word_features = buildVocabulary(preprocessedTrainingSet)
+trainingFeatures = nltk.classify.apply_features(extract_features, preprocessedTrainingSet)
+# apply_features does the feature extraction from the lists
+
