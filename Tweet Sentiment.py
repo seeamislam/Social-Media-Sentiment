@@ -2,6 +2,8 @@ import csv
 import json
 import nltk  # NLP toolkit library
 import twitter  # import the Twitter library
+from rest_framework import status
+
 import config  # import contents of .config
 import re  # Regular expression library - Helps us parse strings and modify them in efficient ways
 from nltk.tokenize import word_tokenize
@@ -18,7 +20,7 @@ twitter_api = twitter.Api(consumer_key=config.ACCESS_TOKEN,
 
 
 def collectTweets(keyword):  # function to collect tweets with a specified keyword
-    tweets_fetched = twitter_api.GetSearch(keyword, count=10)  # collect first 25 tweets with the keyword
+    tweets_fetched = twitter_api.GetSearch(keyword, count=search_num )  # collect first 25 tweets with the keyword
 
     # print("Fetched " + str(len(tweets_fetched)) + " tweets for the term " + keyword)
 
@@ -32,7 +34,8 @@ def collectTweets(keyword):  # function to collect tweets with a specified keywo
     return tweet_info
 
 
-search_term = input("Enter a search keyword:")
+search_term = input("Enter a search keyword: ")
+search_num = int(input("Enter the number of tweets: "))
 testDataSet = collectTweets(search_term)  # saves the tweets as a dictionary
 
 # Print to a .txt file
@@ -169,10 +172,11 @@ NaiveBayesClassifier = nltk.NaiveBayesClassifier.train(trainingFeatures)
 # NaiveBayesClassifier is a built-in nltk function which trains the model using our feature vector.
 
 
-for key in preprocessedTrainingSet:
-    resultLabels = [NaiveBayesClassifier.classify(extract_features(tweet[key])) for tweet in preprocessedTrainingSet]
+for x in range(search_num):
+    resultLabels = [NaiveBayesClassifier.classify(extract_features(tweet[x])) for tweet in preprocessedTrainingSet]
 
     if resultLabels.count('positive') > resultLabels.count('negative'):
+
         print("Overall Positive Sentiment")
     # print("Positive Sentiment Percentage = " + str(100*resultLabels.count('positive')/len(resultLabels)) + "%")
     else:
